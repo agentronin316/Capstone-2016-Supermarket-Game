@@ -1,0 +1,2 @@
+All files will be .csv files for ease of reading in editing
+All files will have the heuristic as the first line
