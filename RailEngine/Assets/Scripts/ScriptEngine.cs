@@ -11,15 +11,26 @@ public class ScriptEngine : MonoBehaviour {
     
 
     public List<ScriptWaypoint> waypoints;
+    public List<ScriptFacings> facings;
 
     int currentWaypoint = 0;
+    int currentFacing = 0;
+
+    bool freeLook = true;
+    Transform mainCamera;
+
 
 	void Start ()
     {
+        mainCamera = Camera.main.transform;
 	    //Import Waypoint List
+
+        //Gentlemen, Start your Engines!
         StartCoroutine(MoveEngine());
+        StartCoroutine(CameraEngine());
 	}
-	
+
+    #region Movement
     IEnumerator MoveEngine()
     {
         while (currentWaypoint < waypoints.Count)
@@ -102,4 +113,43 @@ public class ScriptEngine : MonoBehaviour {
     {
         return ((1 - progress) * (1 - progress) * start + 2 * (1 - progress) * progress * control + progress * progress * end);
     }
+    #endregion
+
+
+    #region Facing
+    IEnumerator CameraEngine()
+    {
+        while (currentFacing < facings.Count)
+        {
+            switch (facings[currentFacing].facingType)
+            {
+                case FacingType.FREE:
+                    freeLook = true;
+                    yield return new WaitForSeconds(facings[currentFacing].facingTime);
+                    break;
+                case FacingType.DIRECTION_LOCK:
+                    StartCoroutine(DirectionLock(facings[currentFacing]));
+                    yield return new WaitForSeconds(facings[currentFacing].facingTime);
+                    break;
+                case FacingType.LOCATION_LOCK:
+                    StartCoroutine(LocationLock(facings[currentFacing]));
+                    yield return new WaitForSeconds(facings[currentFacing].facingTime);
+                    break;
+            }
+            currentFacing++;
+        }
+    }
+
+    IEnumerator DirectionLock(ScriptFacings facing)
+    {
+
+        yield return null;
+    }
+
+    IEnumerator LocationLock(ScriptFacings facing)
+    {
+
+        yield return null;
+    }
+    #endregion
 }

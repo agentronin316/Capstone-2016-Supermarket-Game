@@ -1,0 +1,26 @@
+Each waypoint will be a single line
+Format for this document will be "Column: File Data: Meaning"
+Waypoints will be read in order, and placed into separate lists for Movements and Facings
+The engine will run each list in parallel
+
+First Column: Move or Face: Identify if line represents a movement or a facing waypoint
+
+Move waypoints:
+Second Column: Wait, Straight, or Bezier: Identify which movement type this waypoint is
+Third Column: Floating point number: This is how long the movement will take in seconds (Last column for Wait)
+Fourth Column: Floating point number: this is the x-coordinate of End position
+Fifth Column: Floating point number: this is the y-coordinate of End position
+Sixth Column: Floating point number: this is the z-coordinate of End position (Last column for Straight)
+Seventh Column: Floating point number: this is the x-coordinate of Curve Control Point One's position
+Eighth Column: Floating point number: this is the y-coordinate of Curve Control Point One's position
+Ninth Column: Floating point number: this is the z-coordinate of Curve Control Point One's position (Last column required for Bezier)
+Tenth Column: Floating point number: this is the x-coordinate of Curve Control Point Two's position (If this column is used, 11 and 12 are required)
+Eleventh Column: Floating point number: this is the y-coordinate of Curve Control Point Two's position
+Twelfth Column: Floating point number: this is the z-coordinate of Curve Control Point Two's position
+
+Face waypoints:
+Second Column: Direction_Lock, Location_Lock, or Free: Identify if this the camera will be locked at a point, locked in a direction, or if this is a free look
+Third Column: Floating point number: This is how long the camera setting will last in seconds (Last Column for Free Look)
+Fourth Column: Floating point number: This is the x-coordinate of the point for the camera to look at (Camera will either lock direction from this, or constantly adjust angle to keep it centered)
+Fifth Column: Floating point number: This is the y-coordinate of the point for the camera to look at
+Sixth Column: Floating point number: This is the z-coordinate of the point for the camera to look at
