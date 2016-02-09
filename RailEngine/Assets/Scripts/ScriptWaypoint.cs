@@ -16,4 +16,5 @@ public class ScriptWaypoint
     public float moveTime;
     public Transform moveTarget;
     public Transform curvePoint;
+    public Transform curvePoint2;
 }
