@@ -34,37 +34,52 @@ public static class ScriptFileImport
     public static List<ScriptWaypoint> Waypoints { get; private set;}
     public static List<ScriptFacings> Facings { get; private set;}
 
-    static string fileSavePath;
-    static string fileLoadPath;
-    static string fileName;
+    static string pathingFileSavePath;
+    static string pathingFileLoadPath;
+    static string pathingFileName;
     static string fileType;
-    
+
+    static string characterFileSavePath;
+    static string characterFileLoadPath;
+    static string characterFileName;
+
+    static string itemFileSavePath;
+    static string itemFileLoadPath;
+    static string itemFileName;
+
+
     public static void Initialize()
     {
-        fileName = "path";
+        characterFileLoadPath = "Character/";
+        characterFileSavePath = (Application.dataPath + "/Resources/Character/");
+        characterFileName = "character";
+
+        itemFileLoadPath = "Item/";
+        itemFileSavePath = (Application.dataPath + "/Resources/Character/");
+        itemFileName = "item";
+
+        pathingFileName = "path";
         fileType = ".csv";
-        fileSavePath = (Application.dataPath + "/Resources/Pathing/");
-        fileLoadPath = "Pathing/";
+        pathingFileSavePath = (Application.dataPath + "/Resources/Pathing/");
+        pathingFileLoadPath = "Pathing/";
     }
 
     public static bool CheckPath(int fileIndex)
     {
-        return File.Exists(fileSavePath + fileName + fileIndex + fileType);
+        return File.Exists(pathingFileSavePath + pathingFileName + fileIndex + fileType);
     }
 
-    #region Parse File
+    #region Parse Pathing File
     public static void LoadPath(int fileIndex, out List<ScriptWaypoint> waypoints, out List<ScriptFacings> facings)
     {
         Waypoints = new List<ScriptWaypoint>();
         Facings = new List<ScriptFacings>();
 
-        TextAsset file = Resources.Load(fileLoadPath + fileName + fileIndex + fileType) as TextAsset;
+        TextAsset file = Resources.Load(pathingFileLoadPath + pathingFileName + fileIndex + fileType) as TextAsset;
         if (file != null)
         {
             using (StreamReader reader = new StreamReader(file.text))
             {
-                reader.ReadLine();
-                reader.ReadLine();
                 string line = reader.ReadLine();
                 while (line != null)
                 {
