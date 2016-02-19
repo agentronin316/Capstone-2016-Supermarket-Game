@@ -45,6 +45,7 @@ public class ScriptEngine : MonoBehaviour {
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.BEZIER:
+                case MoveType.BEZIER2:
                     StartCoroutine(BezierMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
@@ -73,7 +74,7 @@ public class ScriptEngine : MonoBehaviour {
         Vector3 startPos = transform.position;
         float moveSpeed = 1 / curMove.moveTime;
         Vector3 nextPos;
-        if (curMove.curvePoint2 == null)
+        if (curMove.moveType == MoveType.BEZIER)
         {
             while (elapsedTime < curMove.moveTime)
             {
