@@ -6,7 +6,7 @@ The engine will run each list in parallel
 First Column: Move or Face: Identify if line represents a movement or a facing waypoint
 
 Move waypoints:
-Second Column: Wait, Straight, or Bezier: Identify which movement type this waypoint is
+Second Column: Wait, Straight, Bezier, or Bezier2 : Identify which movement type this waypoint is
 Third Column: Floating point number: This is how long the movement will take in seconds (Last column for Wait)
 Fourth Column: Floating point number: this is the x-coordinate of End position
 Fifth Column: Floating point number: this is the y-coordinate of End position
