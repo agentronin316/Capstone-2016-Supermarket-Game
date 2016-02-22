@@ -8,7 +8,8 @@ public enum MoveType
 {
     WAIT,
     STRAIGHT,
-    BEZIER
+    BEZIER,
+    BEZIER2
 }
 public class ScriptWaypoint
 {
