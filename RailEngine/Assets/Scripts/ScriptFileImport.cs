@@ -34,35 +34,21 @@ public static class ScriptFileImport
     public static List<ScriptWaypoint> Waypoints { get; private set;}
     public static List<ScriptFacings> Facings { get; private set;}
 
-    static string pathingFileSavePath;
-    static string pathingFileLoadPath;
-    static string pathingFileName;
-    static string fileType;
+    static string pathingFileSavePath = (Application.dataPath + "/Resources/Pathing/");
+    static string pathingFileLoadPath = "/Pathing/";
+    static string pathingFileName = "path";
+    static string fileType = ".csv";
 
-    static string characterFileSavePath;
-    static string characterFileLoadPath;
-    static string characterFileName;
+    static string characterFileSavePath = (Application.dataPath + "/Resources/Character/");
+    static string characterFileLoadPath = "Character/";
+    static string characterFileName = "character";
 
-    static string itemFileSavePath;
-    static string itemFileLoadPath;
-    static string itemFileName;
+    static string itemFileSavePath = (Application.dataPath + "/Resources/Character/");
+    static string itemFileLoadPath = "Item/";
+    static string itemFileName = "item";
 
 
-    public static void Initialize()
-    {
-        characterFileLoadPath = "Character/";
-        characterFileSavePath = (Application.dataPath + "/Resources/Character/");
-        characterFileName = "character";
-
-        itemFileLoadPath = "Item/";
-        itemFileSavePath = (Application.dataPath + "/Resources/Character/");
-        itemFileName = "item";
-
-        pathingFileName = "path";
-        fileType = ".csv";
-        pathingFileSavePath = (Application.dataPath + "/Resources/Pathing/");
-        pathingFileLoadPath = "Pathing/";
-    }
+    
 
     public static bool CheckPath(int fileIndex)
     {
@@ -70,15 +56,16 @@ public static class ScriptFileImport
     }
 
     #region Parse Pathing File
-    public static void LoadPath(int fileIndex, out List<ScriptWaypoint> waypoints, out List<ScriptFacings> facings)
+    public static void LoadPath(int fileIndex, GameObject waypointPrefab, out List<ScriptWaypoint> waypoints, out List<ScriptFacings> facings)
     {
         Waypoints = new List<ScriptWaypoint>();
         Facings = new List<ScriptFacings>();
 
-        TextAsset file = Resources.Load(pathingFileLoadPath + pathingFileName + fileIndex + fileType) as TextAsset;
-        if (file != null)
-        {
-            using (StreamReader reader = new StreamReader(file.text))
+        //Debug.Log(pathingFileLoadPath + pathingFileName + fileIndex + fileType);
+        //TextAsset file = Resources.Load(pathingFileName + fileIndex + fileType) as TextAsset;
+        //if (file != null)
+        //{
+            using (StreamReader reader = new StreamReader(pathingFileSavePath + pathingFileName + fileIndex + fileType))
             {
                 string line = reader.ReadLine();
                 while (line != null)
@@ -87,21 +74,26 @@ public static class ScriptFileImport
                     switch (parts[MOVE_OR_FACE].ToUpper())
                     {
                         case "MOVE":
-                            Waypoints.Add(ParseMove(parts));
+                            Waypoints.Add(ParseMove(waypointPrefab, parts));
                             break;
                         case "FACE":
-                            Facings.Add(ParseFacing(parts));
+                            Facings.Add(ParseFacing(waypointPrefab, parts));
                             break;
                     }
+                line = reader.ReadLine();
                 }
-            }
         }
+        //}
+        //else
+        //{
+        //    Debug.Log("File Not Found.");
+        //}
 
         waypoints = Waypoints;
         facings = Facings;
     }
 
-    static ScriptWaypoint ParseMove(string[] parts)
+    static ScriptWaypoint ParseMove(GameObject waypointPrefab, string[] parts)
     {
         float tempX;
         float tempY;
@@ -117,25 +109,25 @@ public static class ScriptFileImport
                 tempX = Convert.ToSingle(parts[(int)MoveParsing.END_X]);
                 tempY = Convert.ToSingle(parts[(int)MoveParsing.END_Y]);
                 tempZ = Convert.ToSingle(parts[(int)MoveParsing.END_Z]);
-                toReturn.moveTarget.position = new Vector3(tempX, tempY, tempZ);
+                toReturn.moveTarget = (GameObject.Instantiate(waypointPrefab, new Vector3(tempX, tempY, tempZ), Quaternion.identity) as GameObject).transform;
                 goto case MoveType.WAIT;
             case MoveType.BEZIER:
                 tempX = Convert.ToSingle(parts[(int)MoveParsing.CURVE_ONE_X]);
                 tempY = Convert.ToSingle(parts[(int)MoveParsing.CURVE_ONE_Y]);
                 tempZ = Convert.ToSingle(parts[(int)MoveParsing.CURVE_ONE_Z]);
-                toReturn.curvePoint.position = new Vector3(tempX, tempY, tempZ);
+                toReturn.curvePoint = (GameObject.Instantiate(waypointPrefab, new Vector3(tempX, tempY, tempZ), Quaternion.identity) as GameObject).transform;
                 goto case MoveType.STRAIGHT;
             case MoveType.BEZIER2:
                 tempX = Convert.ToSingle(parts[(int)MoveParsing.CURVE_TWO_X]);
                 tempY = Convert.ToSingle(parts[(int)MoveParsing.CURVE_TWO_Y]);
                 tempZ = Convert.ToSingle(parts[(int)MoveParsing.CURVE_TWO_Z]);
-                toReturn.curvePoint2.position = new Vector3(tempX, tempY, tempZ);
+                toReturn.curvePoint2 = (GameObject.Instantiate(waypointPrefab, new Vector3(tempX, tempY, tempZ), Quaternion.identity) as GameObject).transform;
                 goto case MoveType.BEZIER;
         }
         return toReturn;
     }
 
-    static ScriptFacings ParseFacing(string[] parts)
+    static ScriptFacings ParseFacing(GameObject waypointPrefab, string[] parts)
     {
         float tempX;
         float tempY;
