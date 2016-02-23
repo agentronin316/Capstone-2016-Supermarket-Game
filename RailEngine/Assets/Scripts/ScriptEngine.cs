@@ -16,6 +16,7 @@ public class ScriptEngine : MonoBehaviour {
     int currentWaypoint = 0;
     int currentFacing = 0;
 
+    bool lookChange = true;
     bool freeLook = true;
     Transform mainCamera;
 
@@ -34,6 +35,11 @@ public class ScriptEngine : MonoBehaviour {
         StartCoroutine(MoveEngine());
         StartCoroutine(CameraEngine());
 	}
+
+    void Update ()
+    {
+        if (freeLook)
+    }
 
     #region Movement
     IEnumerator MoveEngine()
@@ -132,6 +138,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.FREE:
                     if (facings[currentFacing].facingTime > 0)
                     {
+                        if (!freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = true;
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
                     }
@@ -139,6 +149,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.DIRECTION_LOCK:
                     if (facings[currentFacing].facingTarget != null && facings[currentFacing].facingTime > 0)
                     {
+                        if (freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = false;
                         StartCoroutine(DirectionLock(facings[currentFacing]));
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
@@ -147,6 +161,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.LOCATION_LOCK:
                     if (facings[currentFacing].facingTarget != null && facings[currentFacing].facingTime > 0)
                     {
+                        if (freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = false;
                         StartCoroutine(LocationLock(facings[currentFacing]));
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
