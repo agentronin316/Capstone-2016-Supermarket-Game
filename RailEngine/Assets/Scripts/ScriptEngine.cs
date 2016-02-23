@@ -186,6 +186,7 @@ public class ScriptEngine : MonoBehaviour {
     IEnumerator DirectionLock(ScriptFacings facing)
     {
         float timeElapsed = 0;
+        float lookSpeed = trackingSpeed / facing.facingTime;
         Quaternion camRotation = mainCamera.rotation;
         mainCamera.LookAt(facing.facingTarget);
         Quaternion lookDirection = mainCamera.rotation;
@@ -193,22 +194,24 @@ public class ScriptEngine : MonoBehaviour {
         while (timeElapsed < facing.facingTime)
         {
             timeElapsed += Time.deltaTime;
-            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed / facing.facingTime * trackingSpeed);
+            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed * lookSpeed);
             yield return null;
         }
     }
 
     IEnumerator LocationLock(ScriptFacings facing)
     {
+        Debug.Log("Locking camera to track " + facing.facingTarget.position);
         float timeElapsed = 0;
+        float lookSpeed = trackingSpeed / facing.facingTime;
         Quaternion camRotation = mainCamera.rotation;
-
+        
         while (timeElapsed < facing.facingTime)
         {
             mainCamera.LookAt(facing.facingTarget);
             Quaternion lookDirection = mainCamera.rotation;
             timeElapsed += Time.deltaTime;
-            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed / facing.facingTime * trackingSpeed);
+            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed * lookSpeed);
             yield return null;
         }
     }
