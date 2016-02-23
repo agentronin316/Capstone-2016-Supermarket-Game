@@ -8,7 +8,7 @@ using System.Collections;
 /// </summary>
 public class ScriptEngine : MonoBehaviour {
 
-
+    public GameObject waypointPrefab;
     public ScriptCharacterData playerCharacter;
     public List<ScriptWaypoint> waypoints;
     public List<ScriptFacings> facings;
@@ -16,8 +16,8 @@ public class ScriptEngine : MonoBehaviour {
     int currentWaypoint = 0;
     int currentFacing = 0;
 
-    bool lookChange = true;
-    bool freeLook = true;
+    public bool lookChange = true;
+    public bool freeLook = true;
     Transform mainCamera;
 
 
@@ -25,7 +25,7 @@ public class ScriptEngine : MonoBehaviour {
     {
         mainCamera = Camera.main.transform;
         //Simple test index for demo purposes until menus are implemented
-        ScriptFileImport.LoadPath(1, out waypoints, out facings);
+        ScriptFileImport.LoadPath(1, waypointPrefab, out waypoints, out facings);
 
         //Actual production methodology
         waypoints = ScriptFileImport.Waypoints;
@@ -36,10 +36,7 @@ public class ScriptEngine : MonoBehaviour {
         StartCoroutine(CameraEngine());
 	}
 
-    void Update ()
-    {
-        if (freeLook)
-    }
+    
 
     #region Movement
     IEnumerator MoveEngine()
@@ -49,14 +46,17 @@ public class ScriptEngine : MonoBehaviour {
             switch (waypoints[currentWaypoint].moveType)
             {
                 case MoveType.WAIT:
+                    Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.STRAIGHT:
+                    Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(StraightMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.BEZIER:
                 case MoveType.BEZIER2:
+                    Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(BezierMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
@@ -81,6 +81,10 @@ public class ScriptEngine : MonoBehaviour {
 
     IEnumerator BezierMove(ScriptWaypoint curMove)
     {
+        Debug.Log(curMove.moveTarget);
+        Debug.Log(curMove.curvePoint);
+        Debug.Log(curMove.curvePoint2);
+
         float elapsedTime = 0;
         Vector3 startPos = transform.position;
         float moveSpeed = 1 / curMove.moveTime;
@@ -94,6 +98,7 @@ public class ScriptEngine : MonoBehaviour {
                 nextPos = BezierCurve(startPos, curMove.curvePoint.position, curMove.moveTarget.position, moveTime);
                 transform.LookAt(nextPos);
                 transform.position = nextPos;
+                elapsedTime += Time.deltaTime;
                 yield return null;
             }
         }
@@ -107,6 +112,7 @@ public class ScriptEngine : MonoBehaviour {
                                moveTime * BezierCurve(curMove.curvePoint.position, curMove.curvePoint2.position, curMove.moveTarget.position, moveTime);
                 transform.LookAt(nextPos);
                 transform.position = nextPos;
+                elapsedTime += Time.deltaTime;
                 yield return null;
             }
         }
@@ -124,6 +130,7 @@ public class ScriptEngine : MonoBehaviour {
     Vector3 BezierCurve(Vector3 start, Vector3 control, Vector3 end, float progress)
     {
         return ((1 - progress) * (1 - progress) * start + 2 * (1 - progress) * progress * control + progress * progress * end);
+        //return Vector3.Lerp(Vector3.Lerp(start, control, progress), Vector3.Lerp(control, end, progress), progress);
     }
     #endregion
 
