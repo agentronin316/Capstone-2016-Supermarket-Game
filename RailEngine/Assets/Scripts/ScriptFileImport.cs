@@ -35,17 +35,17 @@ public static class ScriptFileImport
     public static List<ScriptFacings> Facings { get; private set;}
 
     static string pathingFileSavePath = (Application.dataPath + "/Resources/Pathing/");
-    static string pathingFileLoadPath = "/Pathing/";
+    //static string pathingFileLoadPath = "/Pathing/";
     static string pathingFileName = "path";
     static string fileType = ".csv";
 
-    static string characterFileSavePath = (Application.dataPath + "/Resources/Character/");
-    static string characterFileLoadPath = "Character/";
-    static string characterFileName = "character";
+    //static string characterFileSavePath = (Application.dataPath + "/Resources/Character/");
+    //static string characterFileLoadPath = "Character/";
+    //static string characterFileName = "character";
 
-    static string itemFileSavePath = (Application.dataPath + "/Resources/Character/");
-    static string itemFileLoadPath = "Item/";
-    static string itemFileName = "item";
+    //static string itemFileSavePath = (Application.dataPath + "/Resources/Character/");
+    //static string itemFileLoadPath = "Item/";
+    //static string itemFileName = "item";
 
 
     
@@ -133,7 +133,7 @@ public static class ScriptFileImport
         float tempY;
         float tempZ;
         ScriptFacings toReturn = new ScriptFacings();
-        toReturn.facingType = (FacingType)Enum.Parse(typeof(FacingType), parts[(int)FaceParsing.LOOK_TYPE]);
+        toReturn.facingType = (FacingType)Enum.Parse(typeof(FacingType), parts[(int)FaceParsing.LOOK_TYPE].ToUpper());
         switch (toReturn.facingType)
         {
             case FacingType.FREE:
@@ -144,7 +144,7 @@ public static class ScriptFileImport
                 tempX = Convert.ToSingle(parts[(int)FaceParsing.TARGET_X]);
                 tempY = Convert.ToSingle(parts[(int)FaceParsing.TARGET_Y]);
                 tempZ = Convert.ToSingle(parts[(int)FaceParsing.TARGET_Z]);
-                toReturn.facingTarget.position = new Vector3(tempX, tempY, tempZ);
+                toReturn.facingTarget = (GameObject.Instantiate(waypointPrefab, new Vector3(tempX, tempY, tempZ), Quaternion.identity) as GameObject).transform;
                 goto case FacingType.FREE;
         }
         return toReturn;

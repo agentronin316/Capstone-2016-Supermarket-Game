@@ -4,12 +4,16 @@ using System.Collections;
 public class ScriptCanvasControl : MonoBehaviour {
 
     public ScriptEngine engine;
+    public float mouseSensitivity = 10f;
+    //public float minimumX, maximumX, minimumY, maximumY;
+
+    
 
 	// Use this for initialization
 	void Start ()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.visible = false;
+        Cursor.visible = true;
 	}
 	
 	// Update is called once per frame
@@ -20,15 +24,22 @@ public class ScriptCanvasControl : MonoBehaviour {
             if (engine.lookChange)
             {
                 Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = true;
                 engine.lookChange = false;
             }
-            //get mouse movement and use it to rotate the camera
+            float h = mouseSensitivity * Input.GetAxis("Mouse X");
+            float v = mouseSensitivity * Input.GetAxis("Mouse Y");
+            Camera.main.transform.Rotate(-v, h, 0);
+            float z = Camera.main.transform.eulerAngles.z;
+            Camera.main.transform.Rotate(0, 0, -z);
+
         }
         else
         {
             if (engine.lookChange)
             {
                 Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
                 engine.lookChange = false;
             }
         }
