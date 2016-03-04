@@ -10,8 +10,8 @@ public class ScriptEngine : MonoBehaviour {
 
     public GameObject waypointPrefab;
     public ScriptCharacterData playerCharacter;
-    public List<ScriptWaypoint> waypoints;
-    public List<ScriptFacings> facings;
+    public List<ScriptWaypoint> waypoints = new List<ScriptWaypoint>();
+    public List<ScriptFacings> facings = new List<ScriptFacings>();
     public float trackingSpeed = 5f;
     int currentWaypoint = 0;
     int currentFacing = 0;
