@@ -81,9 +81,9 @@ public class ScriptEngine : MonoBehaviour {
 
     IEnumerator BezierMove(ScriptWaypoint curMove)
     {
-        Debug.Log(curMove.moveTarget);
-        Debug.Log(curMove.curvePoint);
-        Debug.Log(curMove.curvePoint2);
+        //Debug.Log(curMove.moveTarget);
+        //Debug.Log(curMove.curvePoint);
+        //Debug.Log(curMove.curvePoint2);
 
         float elapsedTime = 0;
         Vector3 startPos = transform.position;
@@ -120,7 +120,7 @@ public class ScriptEngine : MonoBehaviour {
 
 
     /// <summary>
-    /// Returns the value of a quadratic bezier curve
+    /// Returns a position on a quadratic bezier curve
     /// </summary>
     /// <param name="start">the start point for the curve</param>
     /// <param name="control">the control point for the curve</param>

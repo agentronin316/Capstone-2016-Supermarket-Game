@@ -6,14 +6,21 @@ public class ScriptCanvasControl : MonoBehaviour {
     public ScriptEngine engine;
     public float mouseSensitivity = 10f;
     public GameObject reticle;
+    public GameObject handPrefab;
 
+    Camera mainCamera;
     
 
 	// Use this for initialization
 	void Start ()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        mainCamera = Camera.main;
+#if UNITY_EDITOR
+        Cursor.visible = true;
+#else
         Cursor.visible = false;
+#endif
 	}
 	
 	// Update is called once per frame
@@ -36,9 +43,9 @@ public class ScriptCanvasControl : MonoBehaviour {
             }
             float h = mouseSensitivity * Input.GetAxis("Mouse X");
             float v = mouseSensitivity * Input.GetAxis("Mouse Y");
-            Camera.main.transform.Rotate(-v, h, 0);
-            float z = Camera.main.transform.eulerAngles.z;
-            Camera.main.transform.Rotate(0, 0, -z);
+            mainCamera.transform.Rotate(-v, h, 0);
+            float z = mainCamera.transform.eulerAngles.z;
+            mainCamera.transform.Rotate(0, 0, -z);
 
         }
         else
@@ -64,9 +71,17 @@ public class ScriptCanvasControl : MonoBehaviour {
             }
         }
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
-
+            Debug.Log("Mouse Click");
+            Ray ray = mainCamera.ScreenPointToRay(reticle.transform.position);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100f))
+            {
+                Debug.DrawLine(mainCamera.transform.position, hit.point, Color.green, 10f);
+                GameObject projectile = Instantiate(handPrefab, mainCamera.transform.position, Quaternion.identity) as GameObject;
+                projectile.transform.LookAt(hit.point);
+            }
         }
-	}
+    }
 }
