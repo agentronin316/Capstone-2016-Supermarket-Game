@@ -9,7 +9,7 @@ public class ScriptHand : MonoBehaviour {
     int errorCount = 0;
 
     float distance;
-    //ScriptItem grabbedItem;
+    ScriptItem grabbedItem;
     bool extending = true;
 
 	// Update is called once per frame
@@ -47,7 +47,7 @@ public class ScriptHand : MonoBehaviour {
                 distance = (transform.position - player.transform.position).magnitude;
                 if (distance < .5f)
                 {
-                    //player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
+                    player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
                     targetingScript.canShoot = true;
                     Destroy(gameObject);
                 }
@@ -67,14 +67,14 @@ public class ScriptHand : MonoBehaviour {
         }
         if (other.transform.tag == "Item")
         {
-            //if (grabbedItem == null)
-            //{
-            //    grabbedItem = other.gameObject.GetComponent<ScriptShelfItem>().itemDetails;
-            //    if (grabbedItem == null)
-            //    {
-            //        Debug.Log("Item at " + other.transform.position + " has no ScriptItem attached.");
-            //    }
-            //}
+            if (grabbedItem == null)
+            {
+                grabbedItem = other.gameObject.GetComponent<ScriptShelfItem>().itemDetails;
+                if (grabbedItem == null)
+                {
+                    Debug.Log("Item at " + other.transform.position + " has no ScriptItem attached.");
+                }
+            }
         }
     }
 
@@ -86,14 +86,14 @@ public class ScriptHand : MonoBehaviour {
         }
         if (other.transform.tag == "Item")
         {
-            //if (grabbedItem == null)
-            //{
-            //    grabbedItem = other.gameObject.GetComponent<ScriptShelfItem>().itemDetails;
-            //    if (grabbedItem == null)
-            //    {
-            //        Debug.Log("Item at " + other.transform.position + " has no ScriptItem attached.");
-            //    }
-            //}
+            if (grabbedItem == null)
+            {
+                grabbedItem = other.gameObject.GetComponent<ScriptShelfItem>().itemDetails;
+                if (grabbedItem == null)
+                {
+                    Debug.Log("Item at " + other.transform.position + " has no ScriptItem attached.");
+                }
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ public class ScriptEngine : MonoBehaviour {
 
     public bool lookChange = true;
     public bool freeLook = true;
-    //public List<ScriptItem> inventory = new List<ScriptItem>();
+    public List<ScriptItem> inventory = new List<ScriptItem>();
     Transform mainCamera;
 
 
