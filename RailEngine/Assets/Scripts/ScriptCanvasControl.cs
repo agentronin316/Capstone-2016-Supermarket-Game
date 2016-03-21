@@ -7,6 +7,7 @@ public class ScriptCanvasControl : MonoBehaviour {
     public float mouseSensitivity = 10f;
     public GameObject reticle;
     public GameObject handPrefab;
+    public bool canShoot = true;
 
     Camera mainCamera;
     
@@ -16,11 +17,8 @@ public class ScriptCanvasControl : MonoBehaviour {
     {
         Cursor.lockState = CursorLockMode.Locked;
         mainCamera = Camera.main;
-#if UNITY_EDITOR
-        Cursor.visible = true;
-#else
+
         Cursor.visible = false;
-#endif
 	}
 	
 	// Update is called once per frame
@@ -73,7 +71,7 @@ public class ScriptCanvasControl : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Mouse Click");
+            //Debug.Log("Mouse Click");
             Ray ray = mainCamera.ScreenPointToRay(reticle.transform.position);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100f))
@@ -81,6 +79,11 @@ public class ScriptCanvasControl : MonoBehaviour {
                 Debug.DrawLine(mainCamera.transform.position, hit.point, Color.green, 10f);
                 GameObject projectile = Instantiate(handPrefab, mainCamera.transform.position, Quaternion.identity) as GameObject;
                 projectile.transform.LookAt(hit.point);
+                ScriptHand hand = projectile.GetComponent<ScriptHand>();
+                hand.playerData = engine.playerCharacter;
+                hand.player = engine.gameObject;
+                hand.targetingScript = this;
+                canShoot = false;
             }
         }
     }
