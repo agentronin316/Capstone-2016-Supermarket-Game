@@ -6,34 +6,42 @@ public class ScriptHand : MonoBehaviour {
     public ScriptCharacterData playerData;
     public GameObject player;
     public ScriptCanvasControl targetingScript;
+    public float armLength = 2f;
+    public float reachSpeed = 1f;
+    public float handSize = .5f;
     int errorCount = 0;
 
     float distance;
     ScriptItem grabbedItem;
     bool extending = true;
 
+    void Start ()
+    {
+        transform.localScale = Vector3.one * handSize;
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
-        if (playerData == null)
-        {
-            if (errorCount > 2)
-            {
-                Debug.Log("Null Player Data on Hand, destoying Hand");
-                Destroy(gameObject);
-            }
-            else
-            {
-                errorCount++;
-                Debug.Log("Null Player Data on Hand, " + errorCount);
-            }
-        }
-        else
+        //if (playerData == null)
+        //{
+        //    if (errorCount > 2)
+        //    {
+        //        Debug.Log("Null Player Data on Hand, destoying Hand");
+        //        Destroy(gameObject);
+        //    }
+        //    else
+        //    {
+        //        errorCount++;
+        //        Debug.Log("Null Player Data on Hand, " + errorCount);
+        //    }
+        //}
+        //else
         {
             if (extending)
             {
                 distance = (transform.position - player.transform.position).magnitude;
-                if (distance > playerData.armLength)
+                if (distance > armLength)
                 {
                     extending = false;
                 }
