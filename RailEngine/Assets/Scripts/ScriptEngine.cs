@@ -19,6 +19,8 @@ public class ScriptEngine : MonoBehaviour {
     public bool lookChange = true;
     public bool freeLook = true;
     public List<ScriptItem> inventory = new List<ScriptItem>();
+    public int inventorySpace = 200;
+    public int inventorySpaceUsed = 0;
     Transform mainCamera;
 
 
@@ -35,6 +37,10 @@ public class ScriptEngine : MonoBehaviour {
         //Gentlemen, Start your Engines!
         StartCoroutine(MoveEngine());
         StartCoroutine(CameraEngine());
+        if (playerCharacter == null)
+        {
+            playerCharacter = new ScriptCharacterData();
+        }
 	}
 
     
@@ -47,17 +53,17 @@ public class ScriptEngine : MonoBehaviour {
             switch (waypoints[currentWaypoint].moveType)
             {
                 case MoveType.WAIT:
-                    Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.STRAIGHT:
-                    Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(StraightMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.BEZIER:
                 case MoveType.BEZIER2:
-                    Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(BezierMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
