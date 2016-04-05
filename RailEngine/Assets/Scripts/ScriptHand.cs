@@ -55,7 +55,14 @@ public class ScriptHand : MonoBehaviour {
                 distance = (transform.position - player.transform.position).magnitude;
                 if (distance < .5f)
                 {
-                    player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
+                    if (player.GetComponent<ScriptEngine>().inventorySpace + grabbedItem.size <= player.GetComponent<ScriptEngine>().inventorySpaceUsed)
+                    {
+                        player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
+                    }
+                    else
+                    {
+                        Debug.Log("Cart full.");
+                    }
                     targetingScript.canShoot = true;
                     Destroy(gameObject);
                 }
