@@ -9,10 +9,21 @@ using System.Collections;
 public class ScriptEngine : MonoBehaviour {
 
     public GameObject waypointPrefab;
+    [HideInInspector]
     public ScriptCharacterData playerCharacter;
-    public List<ScriptWaypoint> waypoints = new List<ScriptWaypoint>();
-    public List<ScriptFacings> facings = new List<ScriptFacings>();
+
+    [Header("Character data")]
+    public CharacterSpecial special = CharacterSpecial.NONE;
+    public float cartCapacityFactor = 0f;
+    public float armLength = 1.5f;
+    public float handHitBoxSize = 1f;
+    public float reachSpeed = 1f;
     public float trackingSpeed = 5f;
+
+    [HideInInspector]
+    public List<ScriptWaypoint> waypoints = new List<ScriptWaypoint>();
+    [HideInInspector]
+    public List<ScriptFacings> facings = new List<ScriptFacings>();
     int currentWaypoint = 0;
     int currentFacing = 0;
 
@@ -29,6 +40,13 @@ public class ScriptEngine : MonoBehaviour {
         mainCamera = Camera.main.transform;
         //Simple test index for demo purposes until menus are implemented
         ScriptFileImport.LoadPath(1, waypointPrefab, out waypoints, out facings);
+
+        playerCharacter = new ScriptCharacterData();
+        playerCharacter.cartCapacityFactor = cartCapacityFactor;
+        playerCharacter.armLength = armLength;
+        playerCharacter.handHitBoxSize = handHitBoxSize;
+        playerCharacter.reachSpeed = reachSpeed;
+        playerCharacter.trackingSpeed = trackingSpeed;
 
         //Actual production methodology
         waypoints = ScriptFileImport.Waypoints;
