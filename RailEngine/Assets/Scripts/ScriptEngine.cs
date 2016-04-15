@@ -9,16 +9,16 @@ using System.Collections;
 public class ScriptEngine : MonoBehaviour {
 
     public GameObject waypointPrefab;
+    [HideInInspector]
     public ScriptCharacterData playerCharacter;
 
-    [Header("Character Data")]
+    [Header("Character data")]
     public CharacterSpecial special = CharacterSpecial.NONE;
-    public float cartCapacityFactor = 1f;
+    public float cartCapacityFactor = 0f;
     public float armLength = 1.5f;
     public float handHitBoxSize = 1f;
     public float reachSpeed = 1f;
     public float trackingSpeed = 5f;
-
 
     [HideInInspector]
     public List<ScriptWaypoint> waypoints = new List<ScriptWaypoint>();
@@ -30,24 +30,23 @@ public class ScriptEngine : MonoBehaviour {
     public bool lookChange = true;
     public bool freeLook = true;
     public List<ScriptItem> inventory = new List<ScriptItem>();
+    public int inventorySpace = 200;
+    public int inventorySpaceUsed = 0;
     Transform mainCamera;
 
 
 	void Start ()
     {
         mainCamera = Camera.main.transform;
+        //Simple test index for demo purposes until menus are implemented
+        ScriptFileImport.LoadPath(1, waypointPrefab, out waypoints, out facings);
 
-        //Put designer exposed variables into the playerCharacter
         playerCharacter = new ScriptCharacterData();
-        playerCharacter.special = special;
         playerCharacter.cartCapacityFactor = cartCapacityFactor;
         playerCharacter.armLength = armLength;
         playerCharacter.handHitBoxSize = handHitBoxSize;
         playerCharacter.reachSpeed = reachSpeed;
         playerCharacter.trackingSpeed = trackingSpeed;
-
-        //Simple test index for demo purposes until menus are implemented
-        ScriptFileImport.LoadPath(1, waypointPrefab, out waypoints, out facings);
 
         //Actual production methodology
         waypoints = ScriptFileImport.Waypoints;
@@ -56,6 +55,10 @@ public class ScriptEngine : MonoBehaviour {
         //Gentlemen, Start your Engines!
         StartCoroutine(MoveEngine());
         StartCoroutine(CameraEngine());
+        if (playerCharacter == null)
+        {
+            playerCharacter = new ScriptCharacterData();
+        }
 	}
 
     
@@ -68,17 +71,17 @@ public class ScriptEngine : MonoBehaviour {
             switch (waypoints[currentWaypoint].moveType)
             {
                 case MoveType.WAIT:
-                    Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.STRAIGHT:
-                    Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(StraightMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.BEZIER:
                 case MoveType.BEZIER2:
-                    Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
+                    //Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(BezierMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
