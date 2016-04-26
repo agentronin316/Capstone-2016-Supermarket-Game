@@ -8,15 +8,30 @@ using System.Collections;
 /// </summary>
 public class ScriptEngine : MonoBehaviour {
 
-
+    public GameObject waypointPrefab;
+    [HideInInspector]
     public ScriptCharacterData playerCharacter;
-    public List<ScriptWaypoint> waypoints;
-    public List<ScriptFacings> facings;
+
+    [Header("Character data")]
+    public CharacterSpecial special = CharacterSpecial.NONE;
+    public float cartCapacityFactor = 0f;
+    public float armLength = 1.5f;
+    public float handHitBoxSize = 1f;
+    public float reachSpeed = 1f;
     public float trackingSpeed = 5f;
+
+    [HideInInspector]
+    public List<ScriptWaypoint> waypoints = new List<ScriptWaypoint>();
+    [HideInInspector]
+    public List<ScriptFacings> facings = new List<ScriptFacings>();
     int currentWaypoint = 0;
     int currentFacing = 0;
 
-    bool freeLook = true;
+    public bool lookChange = true;
+    public bool freeLook = true;
+    public List<ScriptItem> inventory = new List<ScriptItem>();
+    public int inventorySpace = 200;
+    public int inventorySpaceUsed = 0;
     Transform mainCamera;
 
 
@@ -24,7 +39,14 @@ public class ScriptEngine : MonoBehaviour {
     {
         mainCamera = Camera.main.transform;
         //Simple test index for demo purposes until menus are implemented
-        ScriptFileImport.LoadPath(1, out waypoints, out facings);
+        ScriptFileImport.LoadPath(1, waypointPrefab, out waypoints, out facings);
+
+        playerCharacter = new ScriptCharacterData();
+        playerCharacter.cartCapacityFactor = cartCapacityFactor;
+        playerCharacter.armLength = armLength;
+        playerCharacter.handHitBoxSize = handHitBoxSize;
+        playerCharacter.reachSpeed = reachSpeed;
+        playerCharacter.trackingSpeed = trackingSpeed;
 
         //Actual production methodology
         waypoints = ScriptFileImport.Waypoints;
@@ -33,7 +55,13 @@ public class ScriptEngine : MonoBehaviour {
         //Gentlemen, Start your Engines!
         StartCoroutine(MoveEngine());
         StartCoroutine(CameraEngine());
+        if (playerCharacter == null)
+        {
+            playerCharacter = new ScriptCharacterData();
+        }
 	}
+
+    
 
     #region Movement
     IEnumerator MoveEngine()
@@ -43,14 +71,17 @@ public class ScriptEngine : MonoBehaviour {
             switch (waypoints[currentWaypoint].moveType)
             {
                 case MoveType.WAIT:
+                    //Debug.Log("waiting for " + waypoints[currentWaypoint].moveTime);
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.STRAIGHT:
+                    //Debug.Log("Moving straight for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(StraightMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
                 case MoveType.BEZIER:
                 case MoveType.BEZIER2:
+                    //Debug.Log("Bezier move for " + waypoints[currentWaypoint].moveTime);
                     StartCoroutine(BezierMove(waypoints[currentWaypoint]));
                     yield return new WaitForSeconds(waypoints[currentWaypoint].moveTime);
                     break;
@@ -75,6 +106,10 @@ public class ScriptEngine : MonoBehaviour {
 
     IEnumerator BezierMove(ScriptWaypoint curMove)
     {
+        //Debug.Log(curMove.moveTarget);
+        //Debug.Log(curMove.curvePoint);
+        //Debug.Log(curMove.curvePoint2);
+
         float elapsedTime = 0;
         Vector3 startPos = transform.position;
         float moveSpeed = 1 / curMove.moveTime;
@@ -88,6 +123,7 @@ public class ScriptEngine : MonoBehaviour {
                 nextPos = BezierCurve(startPos, curMove.curvePoint.position, curMove.moveTarget.position, moveTime);
                 transform.LookAt(nextPos);
                 transform.position = nextPos;
+                elapsedTime += Time.deltaTime;
                 yield return null;
             }
         }
@@ -101,6 +137,7 @@ public class ScriptEngine : MonoBehaviour {
                                moveTime * BezierCurve(curMove.curvePoint.position, curMove.curvePoint2.position, curMove.moveTarget.position, moveTime);
                 transform.LookAt(nextPos);
                 transform.position = nextPos;
+                elapsedTime += Time.deltaTime;
                 yield return null;
             }
         }
@@ -108,7 +145,7 @@ public class ScriptEngine : MonoBehaviour {
 
 
     /// <summary>
-    /// Returns the value of a quadratic bezier curve
+    /// Returns a position on a quadratic bezier curve
     /// </summary>
     /// <param name="start">the start point for the curve</param>
     /// <param name="control">the control point for the curve</param>
@@ -118,6 +155,7 @@ public class ScriptEngine : MonoBehaviour {
     Vector3 BezierCurve(Vector3 start, Vector3 control, Vector3 end, float progress)
     {
         return ((1 - progress) * (1 - progress) * start + 2 * (1 - progress) * progress * control + progress * progress * end);
+        //return Vector3.Lerp(Vector3.Lerp(start, control, progress), Vector3.Lerp(control, end, progress), progress);
     }
     #endregion
 
@@ -132,6 +170,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.FREE:
                     if (facings[currentFacing].facingTime > 0)
                     {
+                        if (!freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = true;
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
                     }
@@ -139,6 +181,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.DIRECTION_LOCK:
                     if (facings[currentFacing].facingTarget != null && facings[currentFacing].facingTime > 0)
                     {
+                        if (freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = false;
                         StartCoroutine(DirectionLock(facings[currentFacing]));
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
@@ -147,6 +193,10 @@ public class ScriptEngine : MonoBehaviour {
                 case FacingType.LOCATION_LOCK:
                     if (facings[currentFacing].facingTarget != null && facings[currentFacing].facingTime > 0)
                     {
+                        if (freeLook)
+                        {
+                            lookChange = true;
+                        }
                         freeLook = false;
                         StartCoroutine(LocationLock(facings[currentFacing]));
                         yield return new WaitForSeconds(facings[currentFacing].facingTime);
@@ -161,6 +211,7 @@ public class ScriptEngine : MonoBehaviour {
     IEnumerator DirectionLock(ScriptFacings facing)
     {
         float timeElapsed = 0;
+        float lookSpeed = trackingSpeed / facing.facingTime;
         Quaternion camRotation = mainCamera.rotation;
         mainCamera.LookAt(facing.facingTarget);
         Quaternion lookDirection = mainCamera.rotation;
@@ -168,22 +219,24 @@ public class ScriptEngine : MonoBehaviour {
         while (timeElapsed < facing.facingTime)
         {
             timeElapsed += Time.deltaTime;
-            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed / facing.facingTime * trackingSpeed);
+            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed * lookSpeed);
             yield return null;
         }
     }
 
     IEnumerator LocationLock(ScriptFacings facing)
     {
+        Debug.Log("Locking camera to track " + facing.facingTarget.position);
         float timeElapsed = 0;
+        float lookSpeed = trackingSpeed / facing.facingTime;
         Quaternion camRotation = mainCamera.rotation;
-
+        
         while (timeElapsed < facing.facingTime)
         {
             mainCamera.LookAt(facing.facingTarget);
             Quaternion lookDirection = mainCamera.rotation;
             timeElapsed += Time.deltaTime;
-            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed / facing.facingTime * trackingSpeed);
+            mainCamera.rotation = Quaternion.Lerp(camRotation, lookDirection, timeElapsed * lookSpeed);
             yield return null;
         }
     }

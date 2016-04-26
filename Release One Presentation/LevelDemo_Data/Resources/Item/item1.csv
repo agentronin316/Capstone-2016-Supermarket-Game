@@ -1,0 +1,2 @@
+Move,Wait/Straight/Bezier/Bezier2,moveTime,endX,endY,endZ,curveOneX,curveOneY,curveOneZ,curveTwoX,curveTwoY,curveTwoZ
+Face,Direction_Lock/Location_Lock/Free,lookTime,targetX,targetY,targetZ
