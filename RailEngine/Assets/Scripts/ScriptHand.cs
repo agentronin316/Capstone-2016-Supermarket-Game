@@ -6,9 +6,9 @@ public class ScriptHand : MonoBehaviour {
     public ScriptCharacterData playerData;
     public GameObject player;
     public ScriptCanvasControl targetingScript;
-    public float armLength = 2f;
-    public float reachSpeed = 1f;
-    public float handSize = .5f;
+    //public float armLength = 2f;
+    //public float reachSpeed = 1f;
+    //public float handSize = .5f;
     int errorCount = 0;
 
     float distance;
@@ -17,7 +17,7 @@ public class ScriptHand : MonoBehaviour {
 
     void Start ()
     {
-        transform.localScale = Vector3.one * handSize;
+        transform.localScale = Vector3.one * playerData.handHitBoxSize;
     }
 
 	// Update is called once per frame
@@ -41,7 +41,7 @@ public class ScriptHand : MonoBehaviour {
             if (extending)
             {
                 distance = (transform.position - player.transform.position).magnitude;
-                if (distance > armLength)
+                if (distance > playerData.armLength)
                 {
                     extending = false;
                 }
@@ -55,13 +55,16 @@ public class ScriptHand : MonoBehaviour {
                 distance = (transform.position - player.transform.position).magnitude;
                 if (distance < .5f)
                 {
-                    if (player.GetComponent<ScriptEngine>().inventorySpace + grabbedItem.size <= player.GetComponent<ScriptEngine>().inventorySpaceUsed)
+                    if (grabbedItem != null)
                     {
-                        player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
-                    }
-                    else
-                    {
-                        Debug.Log("Cart full.");
+                        if (player.GetComponent<ScriptEngine>().inventorySpace + grabbedItem.size <= player.GetComponent<ScriptEngine>().inventorySpaceUsed)
+                        {
+                            player.GetComponent<ScriptEngine>().inventory.Add(grabbedItem);
+                        }
+                        else
+                        {
+                            Debug.Log("Cart full.");
+                        }
                     }
                     targetingScript.canShoot = true;
                     Destroy(gameObject);

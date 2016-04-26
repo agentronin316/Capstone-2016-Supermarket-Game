@@ -17,7 +17,7 @@ public class ScriptCanvasControl : MonoBehaviour {
     {
         Cursor.lockState = CursorLockMode.Locked;
         mainCamera = Camera.main;
-
+        mouseSensitivity = engine.playerCharacter.trackingSpeed;
         Cursor.visible = false;
 	}
 	
