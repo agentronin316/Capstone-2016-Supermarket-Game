@@ -200,6 +200,10 @@ Library/
 
 Obj/
 
+Arkham Interactive/
+prototype_textures/
+
+
 *.csproj
 
 *.unityproj
